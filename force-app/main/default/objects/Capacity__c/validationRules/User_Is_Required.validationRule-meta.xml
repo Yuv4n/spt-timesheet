@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User_Is_Required</fullName>
+    <active>true</active>
+    <description>Salesforce forbids deleteConstraint on a User lookup, and a required lookup demands one - so a required lookup to User cannot exist. The requirement is enforced here instead.</description>
+    <errorConditionFormula>ISBLANK(User__c)</errorConditionFormula>
+    <errorDisplayField>User__c</errorDisplayField>
+    <errorMessage>A capacity record must be linked to a user.</errorMessage>
+</ValidationRule>

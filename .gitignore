@@ -1,0 +1,8 @@
+.sfdx/
+.sf/
+.localdevserver/
+deploy-options.json
+node_modules/
+*.log
+.claude/last-verify.log
+.vscode/settings.json

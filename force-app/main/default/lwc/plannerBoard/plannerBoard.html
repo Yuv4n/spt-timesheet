@@ -1,0 +1,92 @@
+<template>
+    <template lwc:if={isLoading}>
+        <div class="loading">Loading the week…</div>
+    </template>
+
+    <template lwc:if={error}>
+        <div class="error" role="alert">{error}</div>
+    </template>
+
+    <template lwc:if={board}>
+        <div class="week">Week beginning {weekLabel}</div>
+
+        <template lwc:if={isEmpty}>
+            <div class="empty">
+                <template lwc:if={hasNoUsers}>
+                    <p><strong>No users selected.</strong></p>
+                    <p>
+                        Edit this page in Lightning App Builder, select this component,
+                        and paste one or more Salesforce User Ids (starting 005) into the
+                        User Ids property. Separate multiple Ids with commas.
+                    </p>
+                </template>
+                <template lwc:else>
+                    <p><strong>No matching users found.</strong></p>
+                    <p>
+                        The Ids provided did not match any active user in this org.
+                        Check for typos, and confirm the users are active.
+                    </p>
+                </template>
+            </div>
+        </template>
+
+        <div class="board">
+            <template for:each={board.people} for:item="person">
+                <section key={person.userId} class="person">
+                    <header class="person__name">{person.userName}</header>
+
+                    <template for:each={person.days} for:item="day">
+                        <div key={day.key} class={day.capacityClass}>
+                            <div class="day__header">
+                                <span class="day__label">{day.label}</span>
+                                <span class="day__hours">
+                                    {day.scheduledHours} / {day.capacityHours}h
+                                </span>
+                            </div>
+
+                            <div class="meter" title="Billable / non-billable / free">
+                                <div class="meter__billable" style={day.billableStyle}></div>
+                                <div class="meter__nonbillable" style={day.nonBillableStyle}></div>
+                                <template lwc:if={day.showLimit}>
+                                    <div class="meter__limit" style={day.limitStyle} title="Capacity"></div>
+                                </template>
+                            </div>
+
+                            <template for:each={day.items} for:item="item">
+                                <article key={item.key} class={item.cardClass}>
+                                    <div class="item__name">{item.name}</div>
+                                    <div class="item__meta">
+                                        <span>{item.priority}</span>
+                                        <span>{item.hours}</span>
+                                    </div>
+                                    <template lwc:if={item.hasFlags}>
+                                        <div class="item__flags">
+                                            <template for:each={item.flags} for:item="flag">
+                                                <span key={flag.key} class={flag.variant}>{flag.label}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </article>
+                            </template>
+                        </div>
+                    </template>
+                </section>
+            </template>
+        </div>
+
+        <template lwc:if={board.hasBacklog}>
+            <section class="backlog">
+                <header class="backlog__title">Backlog (unassigned)</header>
+                <template for:each={board.backlog} for:item="item">
+                    <article key={item.key} class="item">
+                        <div class="item__name">{item.name}</div>
+                        <div class="item__meta">
+                            <span>{item.priority}</span>
+                            <span>{item.hours}</span>
+                        </div>
+                    </article>
+                </template>
+            </section>
+        </template>
+    </template>
+</template>
