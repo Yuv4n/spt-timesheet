@@ -1,0 +1,157 @@
+.board {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.person {
+    flex: 0 0 15rem;
+}
+
+.person__name {
+    font-weight: 700;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid #d8dde6;
+}
+
+.day {
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    background: #fafaf9;
+}
+
+.day_over {
+    border-color: #dd7a01;
+    background: #fef5e7;
+}
+
+.day__header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #514f4d;
+}
+
+.meter {
+    display: flex;
+    position: relative;
+    height: 0.25rem;
+}
+
+.meter__billable,
+.meter__nonbillable {
+    flex: 0 0 auto;
+}
+
+.meter__limit {
+    position: absolute;
+    top: -0.125rem;
+    bottom: -0.125rem;
+    width: 2px;
+    background: #ba0517;
+}
+
+.meter__billable {
+    background: #2e844a;
+}
+
+.meter__nonbillable {
+    background: #9c9b99;
+}
+
+.item {
+    background: #fff;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    margin-top: 0.375rem;
+}
+
+.item_pinned {
+    border-left: 3px solid #0176d3;
+    background: #f3f7fc;
+}
+
+.item__name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.item__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6875rem;
+    color: #706e6b;
+    margin-top: 0.125rem;
+}
+
+.item__flags {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.flag {
+    font-size: 0.625rem;
+    padding: 0.0625rem 0.25rem;
+    border-radius: 0.125rem;
+}
+
+.flag_deadline {
+    background: #fddde3;
+    color: #ba0517;
+}
+
+.flag_billing {
+    background: #fef5e7;
+    color: #8c4b02;
+}
+
+.flag_overflow {
+    background: #ecebea;
+    color: #514f4d;
+}
+
+.backlog {
+    margin-top: 1rem;
+    max-width: 20rem;
+}
+
+.backlog__title {
+    font-weight: 700;
+    padding: 0.5rem 0;
+}
+
+.error {
+    color: #ba0517;
+    padding: 0.75rem;
+}
+
+.loading {
+    color: #706e6b;
+    font-size: 0.8125rem;
+    padding: 0.75rem;
+}
+
+.week {
+    font-size: 0.75rem;
+    color: #706e6b;
+    padding: 0.25rem 0 0.5rem;
+}
+
+.empty {
+    border: 1px dashed #c9c7c5;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    color: #514f4d;
+    font-size: 0.8125rem;
+    max-width: 32rem;
+}
+
+.empty p {
+    margin: 0 0 0.5rem;
+}
