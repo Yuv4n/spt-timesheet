@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Task__c</fullName>
+    <label>Task</label>
+    <referenceTo>Planning_Item__c</referenceTo>
+    <relationshipLabel>Timesheet Entries</relationshipLabel>
+    <relationshipName>Timesheet_Entries</relationshipName>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Remaining_Minutes__c</fullName>
+    <label>Remaining Minutes</label>
+    <formula>Estimate_Minutes__c - Total_Minutes_Logged__c</formula>
+    <precision>7</precision>
+    <scale>0</scale>
+    <type>Number</type>
+</CustomField>

@@ -1,0 +1,252 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </template>
+
+    <template if:true={error}>
+        <div class="error" role="alert">{error}</div>
+    </template>
+
+    <template if:true={week}>
+        <div class="timesheet">
+            <div class="week-nav">
+                <button type="button" onclick={handlePrevWeek}>&lsaquo; Previous week</button>
+                <span class="week-nav__label">{weekLabel}</span>
+                <button type="button" disabled={isNextDisabled} onclick={handleNextWeek}>Next week &rsaquo;</button>
+            </div>
+
+            <div class="tabs" role="tablist">
+                <template for:each={tabbedDays} for:item="day">
+                    <button
+                        key={day.key}
+                        class={day.tabClass}
+                        data-date={day.theDate}
+                        onclick={handleSelectDay}
+                        type="button"
+                    >
+                        <span class="day-tab__label">{day.label}</span>
+                        <span class="day-tab__total">{day.totalLabel}</span>
+                    </button>
+                </template>
+            </div>
+
+            <div class="body">
+                <div class="day-panel">
+                    <template if:true={selectedDay}>
+                        <h2>{selectedDay.label} &middot; {selectedDay.totalLabel} logged</h2>
+                        <template if:true={hasSelectedDayEntries}>
+                            <ul class="entries">
+                                <template for:each={selectedDay.entries} for:item="entry">
+                                    <li key={entry.key} class="entry">
+                                        <template if:false={entry.isEditing}>
+                                            <span class="entry__task">{entry.taskName}</span>
+                                            <span class="entry__minutes">{entry.minutesLabel}</span>
+                                            <template if:true={canEditEntries}>
+                                                <span class="entry__actions">
+                                                    <button
+                                                        type="button"
+                                                        data-entry-id={entry.entryId}
+                                                        onclick={handleStartEdit}
+                                                    >Edit</button>
+                                                    <button
+                                                        type="button"
+                                                        data-entry-id={entry.entryId}
+                                                        onclick={handleDeleteEntry}
+                                                    >Delete</button>
+                                                </span>
+                                            </template>
+                                        </template>
+                                        <template if:true={entry.isEditing}>
+                                            <span class="entry__task">{entry.taskName}</span>
+                                            <lightning-combobox
+                                                class="entry__edit-duration"
+                                                variant="label-hidden"
+                                                label="Duration"
+                                                value={editMinutes}
+                                                options={durationOptions}
+                                                onchange={handleEditMinutesChange}
+                                            ></lightning-combobox>
+                                            <span class="entry__actions">
+                                                <button
+                                                    type="button"
+                                                    data-entry-id={entry.entryId}
+                                                    onclick={handleSaveEdit}
+                                                >Save</button>
+                                                <button type="button" onclick={handleCancelEdit}>Cancel</button>
+                                            </span>
+                                        </template>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                        <template if:false={hasSelectedDayEntries}>
+                            <template if:true={isFutureDay}>
+                                <p class="empty">This day hasn't happened yet - it's read-only.</p>
+                            </template>
+                            <template if:false={isFutureDay}>
+                                <p class="empty">Nothing logged on this day.</p>
+                            </template>
+                        </template>
+
+                        <template if:true={canLogOnSelectedDay}>
+                            <template if:true={hasTaskOptions}>
+                                <div class="log-form">
+                                    <lightning-combobox
+                                        label="Task"
+                                        placeholder="Choose a task"
+                                        value={logTaskId}
+                                        options={taskOptions}
+                                        onchange={handleLogTaskChange}
+                                    ></lightning-combobox>
+                                    <lightning-combobox
+                                        label="Duration"
+                                        value={logMinutes}
+                                        options={durationOptions}
+                                        onchange={handleLogMinutesChange}
+                                    ></lightning-combobox>
+                                    <lightning-button
+                                        label="Log time"
+                                        variant="brand"
+                                        disabled={logDisabled}
+                                        onclick={handleLogSubmit}
+                                    ></lightning-button>
+                                </div>
+                            </template>
+                            <template if:false={hasTaskOptions}>
+                                <p class="empty">No open tasks to log time against.</p>
+                            </template>
+                        </template>
+                    </template>
+                </div>
+
+                <template if:true={week.isCurrentWeek}>
+                    <div class="pending-panel">
+                        <div class="pending-panel__header">
+                            <h2>Pending</h2>
+                            <button type="button" class="new-task-toggle" onclick={handleToggleCreateForm}>
+                                {newTaskToggleLabel}
+                            </button>
+                        </div>
+
+                        <template if:true={showCreateForm}>
+                            <div class="create-task-form">
+                                <lightning-input
+                                    label="Task name"
+                                    value={newTaskName}
+                                    onchange={handleNewTaskNameChange}
+                                ></lightning-input>
+                                <div class="create-task-form__estimate">
+                                    <lightning-input
+                                        type="number"
+                                        label="Hours"
+                                        min="0"
+                                        value={newTaskHours}
+                                        onchange={handleNewTaskHoursChange}
+                                    ></lightning-input>
+                                    <lightning-input
+                                        type="number"
+                                        label="Minutes"
+                                        min="0"
+                                        max="59"
+                                        value={newTaskMinutes}
+                                        onchange={handleNewTaskMinutesChange}
+                                    ></lightning-input>
+                                </div>
+                                <div class="create-task-form__actions">
+                                    <lightning-button
+                                        label="Add task"
+                                        variant="brand"
+                                        disabled={createTaskDisabled}
+                                        onclick={handleCreateTaskSubmit}
+                                    ></lightning-button>
+                                    <lightning-button
+                                        label="Cancel"
+                                        onclick={handleToggleCreateForm}
+                                    ></lightning-button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template if:true={hasPending}>
+                            <ul class="tasks">
+                                <template for:each={pendingTasks} for:item="task">
+                                    <li key={task.key} class={task.rowClass}>
+                                        <lightning-input
+                                            type="checkbox"
+                                            label={task.name}
+                                            variant="label-hidden"
+                                            checked={task.complete}
+                                            data-task-id={task.taskId}
+                                            onchange={handleToggleComplete}
+                                        ></lightning-input>
+                                        <template if:false={task.isRenaming}>
+                                            <span class="task__name">{task.name}</span>
+                                            <template if:true={task.memberCreated}>
+                                                <button
+                                                    type="button"
+                                                    class="task__rename-btn"
+                                                    data-task-id={task.taskId}
+                                                    onclick={handleStartRename}
+                                                >Rename</button>
+                                            </template>
+                                            <span class="task__meta">
+                                                {task.loggedLabel} / {task.estimateLabel}
+                                                <template if:true={task.isOverrun}>
+                                                    <span class="task__overrun-flag">over</span>
+                                                </template>
+                                                <template if:true={task.complete}>
+                                                    <span class="task__complete-flag">done</span>
+                                                </template>
+                                            </span>
+                                        </template>
+                                        <template if:true={task.isRenaming}>
+                                            <lightning-input
+                                                class="task__rename-input"
+                                                variant="label-hidden"
+                                                label="Task name"
+                                                value={renameValue}
+                                                onchange={handleRenameValueChange}
+                                            ></lightning-input>
+                                            <span class="task__actions">
+                                                <button
+                                                    type="button"
+                                                    data-task-id={task.taskId}
+                                                    onclick={handleSaveRename}
+                                                >Save</button>
+                                                <button type="button" onclick={handleCancelRename}>Cancel</button>
+                                            </span>
+                                        </template>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                        <template if:false={hasPending}>
+                            <p class="empty">Nothing pending.</p>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <div class="completed-section">
+                <button type="button" class="completed-toggle" onclick={handleToggleCompletedSection}>
+                    Completed tasks ({completedTasks.length})
+                </button>
+                <template if:true={showCompleted}>
+                    <template if:true={hasCompletedTasks}>
+                        <ul class="tasks tasks_readonly">
+                            <template for:each={completedTasks} for:item="task">
+                                <li key={task.key} class="task task_complete">
+                                    <span class="task__name">{task.name}</span>
+                                    <span class="task__meta">Completed {task.completedDateLabel}</span>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                    <template if:false={hasCompletedTasks}>
+                        <p class="empty">Nothing completed in the last 30 days.</p>
+                    </template>
+                </template>
+            </div>
+        </div>
+    </template>
+</template>
