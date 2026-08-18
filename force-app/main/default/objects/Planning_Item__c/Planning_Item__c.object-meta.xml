@@ -3,11 +3,11 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <enableReports>true</enableReports>
     <enableSearch>true</enableSearch>
-    <label>Planning Item</label>
+    <label>Task</label>
     <nameField>
         <label>Item Name</label>
         <type>Text</type>
     </nameField>
-    <pluralLabel>Planning Items</pluralLabel>
+    <pluralLabel>Tasks</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
 </CustomObject>

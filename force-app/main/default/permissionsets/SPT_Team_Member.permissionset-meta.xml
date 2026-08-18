@@ -4,27 +4,46 @@
     <description>Team members. Can see their work and record actual time. Cannot re-plan the week or edit capacity.</description>
     <hasActivationRequired>false</hasActivationRequired>
 
+    <tabSettings>
+        <tab>Member_Timesheet</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+
     <classAccesses><apexClass>PlannerModels</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>TimesheetServiceFactory</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LocalTimesheetService</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>MemberTimesheetController</apexClass><enabled>true</enabled></classAccesses>
 
+    <!-- allowCreate: members create their own tasks (decision 22).
+         viewAllRecords: off - the old multi-person planner board controller that needed it is
+         gone; the member view only ever queries the running user's own records. -->
     <objectPermissions>
         <object>Planning_Item__c</object>
-        <allowCreate>false</allowCreate><allowRead>true</allowRead><allowEdit>true</allowEdit>
-        <allowDelete>false</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>true</viewAllRecords>
+        <allowCreate>true</allowCreate><allowRead>true</allowRead><allowEdit>true</allowEdit>
+        <allowDelete>false</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <!-- Controlled-by-parent sharing: visibility already matches Planning_Item__c above. -->
+    <objectPermissions>
+        <object>Timesheet_Entry__c</object>
+        <allowCreate>true</allowCreate><allowRead>true</allowRead><allowEdit>true</allowEdit>
+        <allowDelete>true</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>false</viewAllRecords>
     </objectPermissions>
 
-    <!-- Read-only on everything a team member should not re-plan.
-         Item_Type__c, Priority__c, Status__c and Estimate_Hours__c are required fields and can't
-         carry an explicit fieldPermissions entry - Salesforce always grants them read/edit to
-         anyone with object access and rejects the deploy otherwise. Note this means a team member
-         CAN edit Priority__c/Estimate_Hours__c in practice despite the intent below; Status__c
-         being auto-editable is harmless since it's already meant to be. -->
-    <fieldPermissions><field>Planning_Item__c.Case__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <!-- Status__c, Estimate_Minutes__c, and Timesheet_Entry__c's Task__c/Entry_Date__c/Minutes__c
+         are all required fields and can't carry an explicit fieldPermissions entry - Salesforce
+         always grants them read/edit to anyone with object access and rejects the deploy
+         otherwise. -->
     <fieldPermissions><field>Planning_Item__c.Assignee__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
-    <fieldPermissions><field>Planning_Item__c.Deadline__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
-    <!-- Editable: the two things a team member legitimately changes. -->
+    <!-- Editable: the things a team member legitimately changes. -->
     <fieldPermissions><field>Planning_Item__c.Actual_Minutes__c</field><readable>true</readable><editable>true</editable></fieldPermissions>
-    <!-- Open decision 9: can a team member flip billability after the fact? Currently NO. -->
-    <fieldPermissions><field>Planning_Item__c.Billable__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <!-- Complete__c: editable=false - completion only ever happens through
+         MemberTimesheetController.setComplete(), so Completed_Date__c can never go unstamped by
+         a direct field edit bypassing it. -->
+    <fieldPermissions><field>Planning_Item__c.Complete__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <!-- System-set (creation time / completion trigger), not directly user-editable. -->
+    <fieldPermissions><field>Planning_Item__c.Member_Created__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Completed_Date__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Total_Minutes_Logged__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Remaining_Minutes__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Archived__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
 </PermissionSet>

@@ -4,22 +4,43 @@
     <description>Raj / anyone who plans the team week. Full control of planning items, capacity and absences.</description>
     <hasActivationRequired>false</hasActivationRequired>
 
+    <tabSettings>
+        <tab>Member_Timesheet</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+
     <classAccesses><apexClass>PlannerModels</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>TimesheetServiceFactory</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LocalTimesheetService</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>MemberTimesheetController</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>TaskArchiver</apexClass><enabled>true</enabled></classAccesses>
 
+    <!-- allowDelete: off - no task can ever be deleted, by anyone (decision 24).
+         modifyAllRecords: off too - Salesforce requires Modify All to imply Delete, so the two
+         can't be split. Costs nothing functionally: the object's org-wide default is already
+         Public Read/Write, so every record is already readable/editable without this bypass. -->
     <objectPermissions>
         <object>Planning_Item__c</object>
+        <allowCreate>true</allowCreate><allowRead>true</allowRead><allowEdit>true</allowEdit>
+        <allowDelete>false</allowDelete><modifyAllRecords>false</modifyAllRecords><viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>Timesheet_Entry__c</object>
         <allowCreate>true</allowCreate><allowRead>true</allowRead><allowEdit>true</allowEdit>
         <allowDelete>true</allowDelete><modifyAllRecords>true</modifyAllRecords><viewAllRecords>true</viewAllRecords>
     </objectPermissions>
 
     <!-- Required fields can't carry an explicit fieldPermissions entry - Salesforce always
          grants them read/edit to anyone with object access and rejects the deploy otherwise.
-         Omitted here: Item_Type__c, Priority__c, Status__c, Estimate_Hours__c. -->
-    <fieldPermissions><field>Planning_Item__c.Case__c</field><readable>true</readable><editable>true</editable></fieldPermissions>
+         Omitted here: Status__c, Estimate_Minutes__c, and Timesheet_Entry__c's
+         Task__c/Entry_Date__c/Minutes__c. -->
     <fieldPermissions><field>Planning_Item__c.Assignee__c</field><readable>true</readable><editable>true</editable></fieldPermissions>
-    <fieldPermissions><field>Planning_Item__c.Deadline__c</field><readable>true</readable><editable>true</editable></fieldPermissions>
     <fieldPermissions><field>Planning_Item__c.Actual_Minutes__c</field><readable>true</readable><editable>true</editable></fieldPermissions>
-    <fieldPermissions><field>Planning_Item__c.Billable__c</field><readable>true</readable><editable>true</editable></fieldPermissions>
+    <!-- editable=false - see SPT_Team_Member for why (setComplete() is the only path). -->
+    <fieldPermissions><field>Planning_Item__c.Complete__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Member_Created__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Completed_Date__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Total_Minutes_Logged__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Remaining_Minutes__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
+    <fieldPermissions><field>Planning_Item__c.Archived__c</field><readable>true</readable><editable>false</editable></fieldPermissions>
 </PermissionSet>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>User_Is_Required</fullName>
-    <active>true</active>
-    <description>See Capacity__c.User_Is_Required. Required lookups to User are not permitted by the platform.</description>
-    <errorConditionFormula>ISBLANK(User__c)</errorConditionFormula>
-    <errorDisplayField>User__c</errorDisplayField>
-    <errorMessage>An absence must be linked to a user.</errorMessage>
-</ValidationRule>
