@@ -126,38 +126,6 @@ for the user, legal metadata for the platform.
 `relationshipName` must also be unique per parent object. Both use a
 `Planner_` prefix to avoid colliding with anything else on `User`.
 
-## Audit fixes applied
-
-- Required lookups now carry `<deleteConstraint>Restrict</deleteConstraint>`.
-- Zero-capacity days (absences) are skipped by the projector. Previously an
-  empty absence day counted as "untouched" and accepted work.
-- Completed work scheduled in the current week stays on the board. Previously
-  `Status__c != 'Done'` removed it, so an overrun stopped pushing later work
-  down the moment it was marked done.
-- `userIds` is a setter feeding a real field. A wire's `$parameter` must point
-  at a field, not a getter.
-- `targetConfigs` added so `userIds` is settable in App Builder.
-
-Second audit pass:
-
-- `getWeek` returns an empty board for a null/empty user list instead of binding
-  null into SOQL.
-- Board query is bounded to the displayed week, so next week's plan no longer
-  leaks into this week's projection, and carries a `LIMIT` guard.
-- `reorder()` no longer writes `Scheduled_Date__c` and no longer restarts
-  sequence numbering per day (which collided across days).
-- Weekday names computed from a date offset, not `DateTime.format('EEEE')`,
-  which returns the running user's LOCALE name - a German or French locale
-  matched no `Capacity__c` picklist value and silently gave everyone zero hours.
-- Absence expansion clamped to the requested window.
-- A Case the running user cannot read is flagged as unverified rather than
-  assumed billable.
-- `logActuals` returns a usable message instead of "List has no rows".
-- `LocalTimesheetService` uses `update as user` rather than a partial manual FLS
-  check followed by system-mode DML.
-- Pinned work dated outside the displayed week is flagged, never silently
-  re-placed.
-
 ## Known deliberate omissions
 
 - No drag and drop. Grid vs list is still an open decision (blocking question
