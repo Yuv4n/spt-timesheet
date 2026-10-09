@@ -1,61 +1,36 @@
-# SPT Planner - scaffold
+# Member timesheet
 
-Skeleton for the timesheet optimiser.
+A Salesforce member view for recording time against assigned tasks. The Lightning Web Component presents a week of day tabs alongside pending work. The Apex controller checks ownership and restricts time-entry changes to the current week.
 
-## The seam
+Time entries remain separate records, even for the same task and day. Duration is selected in 15-minute steps from 15 minutes to 12 hours. Members can create tasks, complete or reopen them, and view past weeks. This repository contains the member view; an assignment interface is absent.
 
-`ITimesheetService` is the only place timesheet fields are referenced.
-`LocalTimesheetService` is a dev-org placeholder that writes actuals onto
-`Planning_Item__c` because the dev org has no timesheet object.
-
-**Do not reference timesheet fields anywhere outside an implementation of that
-interface.** That is the whole point of the structure.
-
-## Structure
-
-```
-force-app/main/default/
-  objects/          Planning_Item__c, Capacity__c, Absence__c
-  classes/
-    PlannerModels             DTOs, no SOQL/DML
-    ScheduleProjector         pure push-down logic - all the real bugs live here
-    PlannerBoardController    board payload in one round trip
-    ITimesheetService         the seam
-    LocalTimesheetService     dev-org placeholder
-    TimesheetServiceFactory   single point of implementation choice
-    *Test                     ScheduleProjectorTest is the important one
-  lwc/plannerBoard/           READ ONLY board - slice one, no drag and drop yet
-  permissionsets/             SPT_Planner, SPT_Team_Member
-scripts/apex/seed.apex        seed data, includes deliberate broken records
+```mermaid
+flowchart LR
+    UI[memberTimesheet LWC] --> C[MemberTimesheetController]
+    C --> F[TimesheetServiceFactory]
+    F --> I[ITimesheetService]
+    I --> L[LocalTimesheetService]
+    L --> E[Timesheet_Entry__c]
+    C --> T[Planning_Item__c]
+    A[TaskArchiver] --> T
 ```
 
-## Pipeline
+The service interface separates time-entry storage from controller rules. The included implementation uses custom development-org objects; integration with a real timesheet schema is unfinished.
 
-1. Build in dev org, commit to git
-2. **Code review on the PR** - before the sandbox deploy, not after
-3. Deploy to sandbox (dry run first)
-4. Functional review in sandbox against real data
-5. Deploy to production from git
+## Try it in a development org
 
-## What will break on the sandbox move, and that is expected
+Requires Salesforce CLI and an authenticated development org. From this folder, replace `YOUR_DEV_ORG` with its alias:
 
-- `seed.apex` will fail. SPT's Case object will have required custom fields,
-  validation rules and probably triggers this org does not have.
-- Object name collisions.
-- Field-level security. If the permission sets are not in the deployment, the
-  page loads and shows nothing.
-- The `Billable__c` checkbox may be redundant if SPT already derives
-  billability from the Case.
+```sh
+sf project deploy start --source-dir force-app --target-org YOUR_DEV_ORG
+sf org assign permset --name SPT_Team_Member --target-org YOUR_DEV_ORG
+sf apex run test --test-level RunLocalTests --target-org YOUR_DEV_ORG --result-format human --wait 10
+```
 
-## Design rule: dates are computed, not stored
+Open the Member Timesheet tab in Salesforce. The optional `scripts/apex/seed.apex` deletes existing planning items before inserting ten examples; use it only in a disposable development org.
 
-`Scheduled_Date__c` is written only for PINNED work. Everything else gets its
-date from `ScheduleProjector`, derived from sequence order and capacity.
-`reorder()` therefore writes sequence and assignee only.
+Three Apex test classes are present. Deployment and test execution were not verified in this review. Archiving is manual via `scripts/apex/archive.apex`; no scheduled job is included.
 
-## Scheduling behaviour, TL;DR
+[Design decisions and remaining integration work](DECISIONS.md)
 
-Walk a person's items in sequence order; each consumes its actual hours if
-recorded, otherwise its estimate; when a day runs out of capacity, the next item
-rolls to the following day; pinned items never move; work is never reassigned
-between people and never reordered by priority automatically.
+The current controller test source contains a method name with a space (`renameTaskRejectsAthe managerAssignedTask`). That naming error needs correcting before an Apex compile can succeed. No code was changed in this documentation review.
