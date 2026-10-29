@@ -240,7 +240,7 @@ private class MemberTimesheetControllerTest {
     }
 
     @IsTest
-    static void renameTaskRejectsAthe managerAssignedTask() {
+    static void renameTaskRejectsManagerAssignedTask() {
         Id me = UserInfo.getUserId();
         Planning_Item__c assigned = PlannerTestData.item('the manager assigned this', me, 60);
         insert assigned;

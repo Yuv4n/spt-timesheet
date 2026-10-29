@@ -6,7 +6,7 @@ The controller owns business rules: ownership checks, current-week edits and dur
 
 Each log action creates a separate entry. Completion prevents new logging but still permits current-week entry corrections. Reopening clears the archive flag so the task returns to pending work. Completed tasks remain pending until the manual archiver processes a past completion week.
 
-Queries and most entry writes use user-mode operations. Some task lifecycle fields are written in system context after controller checks. This is an implementation decision; deployment and access-control behaviour have not been validated against a live org in this review.
+Queries and most entry writes use user-mode operations. Some task lifecycle fields are written in system context after controller checks. This is an implementation decision; access-control behaviour has not yet been validated against a live org.
 
 The repository includes three Apex test classes for the controller, local service and archiver. No test transcript or coverage report is checked in. The README lists commands for a development org without assuming a particular local alias.
 

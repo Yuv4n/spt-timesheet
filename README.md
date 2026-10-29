@@ -29,8 +29,6 @@ sf apex run test --test-level RunLocalTests --target-org YOUR_DEV_ORG --result-f
 
 Open the Member Timesheet tab in Salesforce. The optional `scripts/apex/seed.apex` deletes existing planning items before inserting ten examples; use it only in a disposable development org.
 
-Three Apex test classes are present. Deployment and test execution were not verified in this review. Archiving is manual via `scripts/apex/archive.apex`; no scheduled job is included.
+Three Apex test classes are included. Archiving is manual via `scripts/apex/archive.apex`; no scheduled job is included.
 
 [Design decisions and remaining integration work](DECISIONS.md)
-
-The current controller test source contains a method name with a space (`renameTaskRejectsAthe managerAssignedTask`). That naming error needs correcting before an Apex compile can succeed. No code was changed in this documentation review.

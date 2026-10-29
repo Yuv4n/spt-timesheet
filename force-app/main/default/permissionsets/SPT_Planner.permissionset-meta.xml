@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>SPT Planner</label>
-    <description>the manager / anyone who plans the team week. Full control of planning items, capacity and absences.</description>
+    <description>Manager or anyone who plans the team week. Full control of planning items, capacity and absences.</description>
     <hasActivationRequired>false</hasActivationRequired>
 
     <tabSettings>
