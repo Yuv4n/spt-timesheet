@@ -33,3 +33,5 @@ Then open the Member Timesheet tab. The optional `scripts/apex/seed.apex` delete
 ## Limits
 
 Integration with a real timesheet schema is unfinished; the included service targets development-org objects. This repository contains the member view only; there is no assignment interface or scheduled archive job (run `scripts/apex/archive.apex` manually). See [DECISIONS.md](DECISIONS.md).
+
+[MIT licence](LICENSE)
