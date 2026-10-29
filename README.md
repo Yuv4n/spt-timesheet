@@ -1,10 +1,11 @@
 # Member timesheet
 
-A Salesforce member view for recording time against assigned tasks. The Lightning Web Component presents a week of day tabs alongside pending work. The Apex controller checks ownership and restricts time-entry changes to the current week.
+A Salesforce Lightning Web Component for recording time against assigned tasks. This is a sanitised public copy of a timesheet app used by 25 staff in production, written against custom development-org objects rather than the production timesheet schema.
 
-This is a sanitised public copy of a timesheet app used by 25 staff in production. It is written against custom development-org objects rather than the production timesheet schema.
-
-Time entries remain separate records, even for the same task and day. Duration is selected in 15-minute steps from 15 minutes to 12 hours. Members can create tasks, complete or reopen them, and view past weeks. This repository contains the member view; an assignment interface is absent.
+- **UI:** a week of day tabs beside pending work; members create, complete and reopen tasks and view past weeks. Durations run in 15-minute steps from 15 minutes to 12 hours.
+- **Apex:** the controller checks ownership and limits time-entry changes to the current week.
+- **Design:** `ITimesheetService` separates time-entry storage from controller rules, with a local implementation behind a factory.
+- **Tests:** three Apex test classes.
 
 ```mermaid
 flowchart LR
@@ -17,20 +18,18 @@ flowchart LR
     A[TaskArchiver] --> T
 ```
 
-The service interface separates time-entry storage from controller rules. The included implementation uses custom development-org objects; integration with a real timesheet schema is unfinished.
+## Run in a development org
 
-## Try it in a development org
-
-Requires Salesforce CLI and an authenticated development org. From this folder, replace `YOUR_DEV_ORG` with its alias:
+Salesforce CLI and a development org (replace `YOUR_DEV_ORG`):
 
 ```sh
 sf project deploy start --source-dir force-app --target-org YOUR_DEV_ORG
 sf org assign permset --name SPT_Team_Member --target-org YOUR_DEV_ORG
-sf apex run test --test-level RunLocalTests --target-org YOUR_DEV_ORG --result-format human --wait 10
+sf apex run test --test-level RunLocalTests --target-org YOUR_DEV_ORG --wait 10
 ```
 
-Open the Member Timesheet tab in Salesforce. The optional `scripts/apex/seed.apex` deletes existing planning items before inserting ten examples; use it only in a disposable development org.
+Then open the Member Timesheet tab. `scripts/apex/seed.apex` deletes existing planning items before adding examples, so use it only in a disposable org.
 
-Three Apex test classes are included. Archiving is manual via `scripts/apex/archive.apex`; no scheduled job is included.
+## Limits
 
-[Design decisions and remaining integration work](DECISIONS.md)
+This repository contains the member view only; there is no assignment interface or scheduled archive job (run `scripts/apex/archive.apex` manually). See [DECISIONS.md](DECISIONS.md).
