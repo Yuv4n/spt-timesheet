@@ -2,6 +2,8 @@
 
 A Salesforce member view for recording time against assigned tasks. The Lightning Web Component presents a week of day tabs alongside pending work. The Apex controller checks ownership and restricts time-entry changes to the current week.
 
+This is a sanitised public copy of a timesheet app used by 25 staff in production. It is written against custom development-org objects rather than the production timesheet schema.
+
 Time entries remain separate records, even for the same task and day. Duration is selected in 15-minute steps from 15 minutes to 12 hours. Members can create tasks, complete or reopen them, and view past weeks. This repository contains the member view; an assignment interface is absent.
 
 ```mermaid
